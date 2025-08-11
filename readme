@@ -1,41 +1,36 @@
-# LLM Router
+# 🚀 LLM Router
 
-LLM Router is a Python + Flask application that intelligently routes prompts to the most suitable large language model (LLM) based on **cost**, **latency**, or **quality**.
-It supports **A/B testing** between models, logs all requests in a database, and provides a **modern interactive dashboard** to visualize usage and compare performance.
+A Flask-based tool to **route prompts to the most suitable LLM** based on task type, run **A/B tests** between models, and visualize results in a clean dashboard.
 
 ---
 
-## 🚀 Features
-
-* **Routing by optimization goal** (Cost / Latency / Quality)
-* **JSON-based model lists** for different task types (`qa`, `summarization`, `code`)
-* **SQLite logging** of all requests & test results
-* **Interactive dashboard** with:
-
-  * Recent requests
-  * A/B test results (all-vs-all)
-  * Model performance stats
-* **Automatic A/B testing** with statistical analysis (t-test)
-* **Integration with OpenRouter API** for multi-provider model access
+## 📦 Features
+- **JSON-based model lists** for `qa`, `summarization`, and `code` tasks
+- **SQLite logging** of requests & test results
+- **Interactive dashboards**:
+  - Recent requests
+  - A/B test results (all-vs-all)
+  - Model performance statistics
+- **Automatic A/B testing** with t-test analysis
+- **Integration with OpenRouter API** for multi-provider access
 
 ---
 
 ## 📂 Project Structure
-
 ```
 LLMrouter/
 │── app.py                # Flask web app
-│── dashboard.html        # Dashboard template
-│── index.html            # Main chat UI template
-│── ab_test.py            # A/B testing script
-│── routing_logs.db       # SQLite database
-│── eval_prompts/         # Prompt sets for testing
-│── code.json             # Model list for 'code' tasks
-│── qa.json               # Model list for 'qa' tasks
-│── summarization.json    # Model list for 'summarization' tasks
-│── prompts.json          # Evaluation prompts for each task
-│── requirements.txt      # Dependencies
-│── .env.example          # Environment variables template
+│── dashboard.html         # Dashboard template
+│── index.html             # Main chat UI template
+│── ab_test.py             # A/B testing script
+│── routing_logs.db        # SQLite database
+│── eval_prompts/          # Prompt sets for testing
+│── code.json              # Model list for 'code' tasks
+│── qa.json                # Model list for 'qa' tasks
+│── summarization.json     # Model list for 'summarization' tasks
+│── prompts.json           # Evaluation prompts
+│── requirements.txt       # Dependencies
+│── .env.example           # Environment variables template
 ```
 
 ---
@@ -43,69 +38,57 @@ LLMrouter/
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the repo
-
 ```bash
-git clone https://github.com/yourusername/llmrouter.git
-cd llmrouter
+git clone https://github.com/TeefAlfadhli/LLM-Router.git
+cd LLMrouter
 ```
 
 ### 2️⃣ Create a virtual environment
-
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
 ### 3️⃣ Install dependencies
-
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4️⃣ Configure environment variables
-
 ```bash
 cp .env.example .env
-# Open .env and set your OpenRouter API key
+```
+Edit `.env` and add your **OpenRouter API key**:
+```
 ROUTER_KEY=your_api_key_here
 ```
 
 ### 5️⃣ Run the Flask app
-
 ```bash
 python app.py
 ```
-
-Go to **[http://127.0.0.1:5000](http://127.0.0.1:5000)** in your browser.
+Open in browser: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 ---
 
-## 📊 Running A/B Tests
-
-To compare all models for each task:
-
+## 🧪 Running A/B Tests
+Run:
 ```bash
 python ab_test.py
 ```
-
-The script will:
-
-* Load prompts from `eval_prompts/prompts.json`
-* Compare models in **all-vs-all** fashion
-* Store results in the database
-* Display results in the dashboard
+This will:
+- Test all models for each task (all-vs-all)
+- Log results into `routing_logs.db`
+- Display in dashboard
 
 ---
 
-## 🛠 Requirements
-
-* Python 3.9+
-* OpenRouter API key
-* Internet connection
+## 📊 Viewing Results
+- Recent requests table  
+- Latest A/B test results  
+- Model performance stats  
 
 ---
 
 ## 📜 License
-
-MIT License
-
+MIT License — feel free to modify and use.
