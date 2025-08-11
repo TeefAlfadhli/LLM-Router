@@ -1,95 +1,141 @@
-# 🚀 LLM Router
+🧠 LLM Router
 
-A Flask-based tool to **route prompts to the most suitable LLM** based on task type, run **A/B tests** between models, and visualize results in a clean dashboard.
+An adaptive routing system for Large Language Models (LLMs) that intelligently selects the most cost-effective, fastest, or highest-quality model for a given task. Includes a dashboard for monitoring usage, costs, latency, and A/B testing results for model comparisons.
 
----
+⸻
 
-## 📦 Features
-- **JSON-based model lists** for `qa`, `summarization`, and `code` tasks
-- **SQLite logging** of requests & test results
-- **Interactive dashboards**:
-  - Recent requests
-  - A/B test results (all-vs-all)
-  - Model performance statistics
-- **Automatic A/B testing** with t-test analysis
-- **Integration with OpenRouter API** for multi-provider access
+🚀 Features
+	•	Task classification – Automatically classifies prompts into code, summarization, qa, or general.
+	•	Model selection – Routes requests to the best model based on optimization goals (cost, latency, or quality).
+	•	A/B testing – Runs all-vs-all model comparisons with automated scoring.
+	•	Dashboard – Real-time view of:
+	•	Request history
+	•	Cost & latency trends
+	•	Model usage stats
+	•	A/B test summary table
+	•	SQLite logging – Persistent request and test results storage.
+	•	Flask + Chart.js UI – Clean, dark-themed interface.
 
----
+⸻
 
-## 📂 Project Structure
-```
-LLMrouter/
-│── app.py                # Flask web app
-│── dashboard.html         # Dashboard template
-│── index.html             # Main chat UI template
-│── ab_test.py             # A/B testing script
-│── routing_logs.db        # SQLite database
-│── eval_prompts/          # Prompt sets for testing
-│── code.json              # Model list for 'code' tasks
-│── qa.json                # Model list for 'qa' tasks
-│── summarization.json     # Model list for 'summarization' tasks
-│── prompts.json           # Evaluation prompts
-│── requirements.txt       # Dependencies
-│── .env.example           # Environment variables template
-```
+📂 Project Structure
 
----
+LLM-Router/
+│
+├── app.py                # Main Flask app
+├── ab_test.py            # All-vs-all model A/B testing
+├── dashboard.html        # Dashboard UI template
+├── index.html            # Main app UI template
+├── routing_logs.db       # SQLite database
+├── code.json             # Models for 'code' tasks
+├── summarization.json    # Models for 'summarization' tasks
+├── qa.json               # Models for 'qa' tasks
+├── eval_prompts/         # Evaluation prompts for A/B testing
+│   └── prompts.json
+├── .gitignore
+├── requirements.txt
+└── README.md
 
-## ⚙️ Installation & Setup
 
-### 1️⃣ Clone the repo
-```bash
+⸻
+
+🛠 Installation
+	1.	Clone the repository
+
 git clone https://github.com/TeefAlfadhli/LLM-Router.git
-cd LLMrouter
-```
+cd LLM-Router
 
-### 2️⃣ Create a virtual environment
-```bash
+
+	2.	Create a virtual environment
+
 python3 -m venv venv
-source venv/bin/activate
-```
+source venv/bin/activate   # On Mac/Linux
+venv\Scripts\activate      # On Windows
 
-### 3️⃣ Install dependencies
-```bash
+
+	3.	Install dependencies
+
 pip install -r requirements.txt
-```
 
-### 4️⃣ Configure environment variables
-```bash
-cp .env.example .env
-```
-Edit `.env` and add your **OpenRouter API key**:
-```
-ROUTER_KEY=your_api_key_here
-```
 
-### 5️⃣ Run the Flask app
-```bash
+	4.	Set environment variables
+Create a .env file:
+
+ROUTER_KEY=your_openrouter_api_key_here
+
+
+
+⸻
+
+▶️ Usage
+
+Start the Flask App
+
 python app.py
-```
-Open in browser: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
----
+Then open:
+http://localhost:5000
 
-## 🧪 Running A/B Tests
+⸻
 
-Run:
-```bash
+📊 Dashboard
+	•	Go to: http://localhost:5000/dashboard
+	•	View:
+	•	Total requests
+	•	Average latency
+	•	Total estimated cost
+	•	Latency & cost over time
+	•	Model usage charts
+	•	A/B testing results table
+
+⸻
+
+🔬 Running A/B Tests
+
 python ab_test.py
-```
-This will:
-- Test all models for each task (all-vs-all)
-- Log results into `routing_logs.db`
-- Display in dashboard
 
----
+This:
+	•	Compares all models in each task category
+	•	Uses evaluation prompts from eval_prompts/prompts.json
+	•	Logs results to ab_summaries in routing_logs.db
+	•	Displays winners in the dashboard
 
-## 📊 Viewing Results
-- Recent requests table  
-- Latest A/B test results  
-- Model performance stats  
+⸻
 
----
+📌 Example Prompt Classification
 
-## 📜 License
-MIT License — feel free to modify and use.
+Prompt	Task Type
+“Summarize this article about AI ethics.”	summarization
+“Write a Python function to reverse a string.”	code
+“Who is the president of the United States in 2025?”	qa
+“Tell me something interesting.”	general
+
+
+⸻
+
+📦 Requirements
+	•	Python 3.8+
+	•	Flask
+	•	requests
+	•	python-dotenv
+	•	sqlite3
+	•	scipy
+	•	chart.js (frontend)
+
+Install all dependencies:
+
+pip install -r requirements.txt
+
+
+⸻
+
+📝 License
+
+This project is licensed under the MIT License.
+
+⸻
+
+🙌 Acknowledgements
+	•	OpenRouter API for model routing
+	•	Chart.js for dashboard charts
+	•	Flask for backend web server
