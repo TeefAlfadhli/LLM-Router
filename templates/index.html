@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LLM Router</title>
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+</head>
+<body style="font-family: sans-serif; background: #f9fafb; margin: 0;">
+
+    <!-- Navigation Bar -->
+    <nav style="background-color: #111827; color: white; padding: 1rem;">
+        <strong style="font-size: 1.2rem;">🧠 LLM Router</strong>
+    </nav>
+
+    <!-- Chat Container -->
+    <div style="max-width: 600px; margin: 20px auto; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+        <!-- Form for prompt -->
+        <form hx-post="/process" hx-target="#response" hx-swap="innerHTML" style="margin-bottom: 1rem;">
+            <label for="prompt"><strong>Enter your prompt:</strong></label><br>
+            <textarea name="prompt" rows="4" cols="50" required placeholder="Type your message..." style="width: 100%; margin-top: 5px;"></textarea><br><br>
+
+            <label>Optimize For:</label>
+            <select name="optimize_for" style="margin-left: 5px;">
+                <option value="cost">Cost</option>
+                <option value="quality">Quality</option>
+                <option value="latency">Latency</option>
+            </select>
+
+            <button type="submit" style="float: right; background-color: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Send</button>
+            <div style="clear: both;"></div>
+        </form>
+
+        <!-- Response container -->
+        <div id="response">
+            <!-- LLM response will be injected here -->
+        </div>
+
+    </div>
+</body>

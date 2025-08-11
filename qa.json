@@ -1,0 +1,6 @@
+[
+    {
+        "id": "google/gemini-2.5-flash", "cost": 0.0003, "latency": 0.33, "quality": 81},
+    {"id": "google/gemini-pro", "cost": 3.00, "latency": 0.22, "quality": 75},
+    {"id": "openai/gpt-4", "cost": 4.30, "latency": 0.48, "quality": 85}
+  ]

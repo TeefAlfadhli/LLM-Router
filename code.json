@@ -1,0 +1,5 @@
+[
+    {"id": "inception/mercury-coder", "cost": 0.30, "latency": 0.10, "quality": 70},
+    {"id": "deepseek-ai/deepseek-coder:latest", "cost": 0.50, "latency": 0.20, "quality": 75},
+    {"id": "openai/gpt-4", "cost": 4.30, "latency": 0.48, "quality": 85}
+  ]

@@ -1,0 +1,14 @@
+{
+    "qa": [
+        "Who is the president of the United States in 2025?",
+        "What is the capital of Japan?"
+    ],
+    "summarization": [
+        "Summarize the following text: The quick brown fox jumps over the lazy dog.",
+        "Summarize the main points of climate change impacts."
+    ],
+    "code": [
+        "Write a Python function to reverse a string.",
+        "Generate JavaScript code to create a button."
+    ]
+}

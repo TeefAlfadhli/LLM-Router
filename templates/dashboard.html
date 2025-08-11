@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>LLM Router – Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --bg:#0b1220; --card:#121a2b; --muted:#8ea0c5; --text:#e8eefc; --accent:#5b8cff; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
+    nav { padding:14px 20px; background:#0a1020; border-bottom:1px solid #1c2742; display:flex; align-items:center; justify-content:space-between; }
+    nav .brand { font-weight:700; letter-spacing:.2px; }
+    .container { max-width:1200px; margin:24px auto; padding:0 16px; }
+    .grid { display:grid; gap:16px; }
+    .grid.cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { background:var(--card); border:1px solid #1b2744; border-radius:16px; padding:16px; }
+    .card h3 { margin:0 0 8px; font-size:14px; color:var(--muted); font-weight:600; }
+    .card .big { font-size:28px; font-weight:700; }
+    .row { display:grid; gap:16px; grid-template-columns: 1fr 1fr; margin-top:16px; }
+    .chart-wrap { height: 280px; }
+    .chart-wrap canvas { height:100% !important; background:#0f1628; border-radius:12px; padding:8px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { border-bottom:1px solid #1c2742; padding:10px 8px; text-align:left; }
+    th { color:var(--muted); font-weight:600; }
+    .pill { font-size:12px; padding:2px 8px; border-radius:999px; background:#0f1b36; border:1px solid #25345f; color:#a8b6da; }
+    .footer { color:#6f83b3; font-size:12px; margin-top:12px; }
+    .table-scroll { max-height: 380px; overflow:auto; border-radius:12px; }
+    .abrow { background:#101a33; }
+    .task-badge { font-size:11px; padding:2px 6px; border-radius:999px; border:1px solid #2a3c6f; background:#0e1a36; color:#c8d6ff; margin-left:6px; }
+    @media (max-width: 900px){ .grid.cards{ grid-template-columns:1fr; } .row{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="brand">🧠 LLM Router • Dashboard</div>
+    <div><a class="pill" href="/">← Back to App</a></div>
+  </nav>
+
+  <div class="container">
+    <!-- KPI cards -->
+    <div class="grid cards">
+      <div class="card">
+        <h3>Total Requests</h3>
+        <div class="big">{{ total_requests }}</div>
+      </div>
+      <div class="card">
+        <h3>Avg Latency</h3>
+        <div class="big">{{ avg_latency }} ms</div>
+      </div>
+      <div class="card">
+        <h3>Total Estimated Cost</h3>
+        <div class="big">${{ '%.4f'|format(total_cost) }}</div>
+      </div>
+    </div>
+
+    <!-- charts -->
+    <div class="row">
+      <div class="card">
+        <h3>Latency Over Time</h3>
+        <div class="chart-wrap"><canvas id="latencyChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Cost Over Time</h3>
+        <div class="chart-wrap"><canvas id="costChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <h3>Requests by Model</h3>
+        <div class="chart-wrap"><canvas id="modelCountChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Avg Latency by Model</h3>
+        <div class="chart-wrap"><canvas id="modelLatencyChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- A/B results table -->
+    <div class="card" style="margin-top:16px;">
+      <h3>A/B Test Results (latest 20)</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Time (UTC)</th>
+              <th>Task</th>
+              <th>Model A</th>
+              <th>Model B</th>
+              <th>Wins A</th>
+              <th>Wins B</th>
+              <th>Ties</th>
+              <th>Avg Score A</th>
+              <th>Avg Score B</th>
+              <th>Avg Lat A (ms)</th>
+              <th>Avg Lat B (ms)</th>
+              <th>t-stat</th>
+              <th>p-value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in ab_rows %}
+            <tr class="abrow">
+              <td>{{ r['timestamp'] }}</td>
+              <td>{{ r['task'] }}</td>
+              <td>{{ r['model_a'].split('/')[-1] }}</td>
+              <td>{{ r['model_b'].split('/')[-1] }}</td>
+              <td>{{ r['wins_a'] }}</td>
+              <td>{{ r['wins_b'] }}</td>
+              <td>{{ r['ties'] }}</td>
+              <td>{{ '%.2f'|format(r['avg_score_a'] or 0) }}</td>
+              <td>{{ '%.2f'|format(r['avg_score_b'] or 0) }}</td>
+              <td>{{ '%.1f'|format(r['avg_latency_a'] or 0) }}</td>
+              <td>{{ '%.1f'|format(r['avg_latency_b'] or 0) }}</td>
+              <td>{{ r['t_stat'] if r['t_stat'] is not none else '' }}</td>
+              <td>{{ r['p_value'] if r['p_value'] is not none else '' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">Showing latest {{ ab_rows|length }} A/B tests.</div>
+    </div>
+
+    <!-- recent requests table -->
+    <div class="card" style="margin-top:16px;">
+      <h3>Recent Requests (latest 100)</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Time (UTC)</th>
+              <th>Task</th>
+              <th>Optimize</th>
+              <th>Model</th>
+              <th>Latency (ms)</th>
+              <th>Cost ($)</th>
+              <th>Tokens</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr class="{% if r['task_type'] == 'ab_test' %}abrow{% endif %}">
+              <td>{{ r['timestamp'] }}</td>
+              <td>
+                {{ r['task_type'] }}
+                {% if r['task_type'] == 'ab_test' %}
+                  <span class="task-badge">A/B summary</span>
+                {% endif %}
+              </td>
+              <td>{{ r['optimize_for'] }}</td>
+              <td>
+                {% if r['task_type'] == 'ab_test' %}
+                  {{ r['model'] }}
+                {% else %}
+                  {{ r['model'].split('/')[-1] }}
+                {% endif %}
+              </td>
+              <td>{{ r['latency_ms'] }}</td>
+              <td>{{ '%.4f'|format(r['cost'] or 0) }}</td>
+              <td>{{ r['total_tokens'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">Showing latest {{ rows|length }} requests.</div>
+    </div>
+  </div>
+
+  <script>
+    const times = {{ times|tojson }};
+    const latencies = {{ latencies|tojson }};
+    const costs = {{ costs|tojson }};
+    const modelLabels = {{ model_labels|tojson }};
+    const modelCounts = {{ model_counts|tojson }};
+    const modelAvgLat = {{ model_avg_lat|tojson }};
+
+    const mkChart = (id, type, labels, data, label) => {
+      const ctx = document.getElementById(id).getContext('2d');
+      return new Chart(ctx, {
+        type,
+        data: { labels, datasets: [{ label, data }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { x: { ticks: { color: '#a8b6da' } }, y: { ticks: { color: '#a8b6da' } } },
+          plugins: { legend: { labels: { color: '#dfe7ff' } } }
+        }
+      });
+    };
+
+    mkChart('latencyChart', 'line', times, latencies, 'Latency (ms)');
+    mkChart('costChart', 'line', times, costs, 'Cost ($)');
+    mkChart('modelCountChart', 'bar', modelLabels, modelCounts, 'Request Count');
+    mkChart('modelLatencyChart', 'bar', modelLabels, modelAvgLat, 'Avg Latency (ms)');
+  </script>
+</body>
+</html>

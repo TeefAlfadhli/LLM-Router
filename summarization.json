@@ -1,0 +1,5 @@
+[
+    {"id": "openai/gpt-3.5-turbo", "cost": 1.93, "latency": 0.15, "quality": 65},
+    {"id": "mistralai/mistral-7b-instruct", "cost": 0.50, "latency": 0.12, "quality": 62},
+    {"id": "openai/gpt-4", "cost": 4.30, "latency": 0.48, "quality": 75}
+  ]
